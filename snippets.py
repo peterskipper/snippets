@@ -5,13 +5,11 @@ import csv
 logging.basicConfig(filename="output.log",level=logging.DEBUG)
 
 def put(name, snippet, filename):
-    """
-    Store a snippet with an associated name in the CSV file
-    """
-    logging.info("Writing {}:{} to {}").format(name, snippet, filename)
+    """Store a snippet with an associated name in the CSV file"""
+    logging.info("Writing {!r}:{!r} to {!r}".format(name, snippet, filename))
     logging.debug("Opening file")
-    with open(filename, 'ab') as output:
-        writer = csv.writer(output, delimiter=',')
+    with open(filename, 'a') as output:
+        writer = csv.writer(output)
         logging.debug("Writing snippet to file")
         writer.writerow([name,snippet])
     logging.debug("Write successful")
