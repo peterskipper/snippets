@@ -17,6 +17,23 @@ def put(name, snippet, filename):
     logging.debug("Write successful")
     return name, snippet
 
+def get(name, filename):
+    """Retrieve snippet text from name and file"""
+    logging.info("Reading {!r} from {!r}".format(name, filename))
+    logging.debug("Opening file")
+    with open(filename, 'r') as input:
+        reader = csv.DictReader(input,fieldnames=["name","snippet"])
+        found = False
+        logging.debug("Reading file")
+        for line in reader:
+            if line["name"] == name:
+                found = True
+                return line["snippet"]
+        if not found:
+            print "The snippet {} cannot be found in the file {}.".format(name, filename)
+            return "nothing."        
+
+
 def make_parser():
     """Construct the command line parser"""
     logging.info("Constructing parser")
@@ -30,7 +47,13 @@ def make_parser():
     put_parser = subparsers.add_parser("put", help="Store a snippet")
     put_parser.add_argument("name", help="The name of a snippet")
     put_parser.add_argument("snippet", help="The snippet text")
-    put_parser.add_argument("filename", default="snippets.csv", nargs="?", help="The snippet filename")
+    put_parser.add_argument("filename", default="snippets.csv", nargs="?", help="File where snippets are stored")
+
+    #Subparser for the get command
+    logging.debug("Constructing get subparser")
+    get_parser = subparsers.add_parser("get", help="Retrieve a snippet")
+    get_parser.add_argument("name", help="The name of a snippet")
+    get_parser.add_argument("filename", default="snippets.csv", nargs="?", help="File where snippets are stored")
 
     return parser
 
@@ -46,6 +69,10 @@ def main():
     if command == "put":
         name, snippet = put(**arguments)
         print "Stored {!r} as {!r}". format(snippet, name)
+
+    if command == "get":
+        snippet = get(**arguments)
+        print "Retrieved: " + snippet
 
 if __name__ == '__main__':
     main()
